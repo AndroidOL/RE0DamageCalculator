@@ -189,7 +189,7 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
                 HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT else HeppenProbability_EXT
                 HeppenProbability_CRT = 0 if HeppenProbability_CRT < HeppenProbabilityThreshold_CRT else HeppenProbability_CRT
             # 发生次数、连击概率、暴击概率等
-            print("发生", SingleSkill["发生次数"], "次：连击概率", SingleSkill["连击概率"], "%")
+            print("发生", SingleSkill["发生次数"], "次：", "连击" if not CalcMode else "暴击", "概率", SingleSkill["连击概率"] if not CalcMode else SingleSkill["暴击概率"], "%")
             AttackPower = AttackV["基础攻击"]
             AmplifyDamage = AttackV["伤害加成"]
             # 常规攻击伤害等于
@@ -248,7 +248,7 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
 
 if __name__ == '__main__':
     Team = [
-        Emilia(1429, 4.5, [99, 99], [15, 150]),
+        Emilia(1429, 4.5, [95, 20], [15, 150]),
         # Emilia(1429, [80, 10], [188, 17.5]),
         # Emilia(1429, [80, 10], [188, 17.5])
     ]
