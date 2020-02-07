@@ -127,12 +127,27 @@ round_up = lambda num: round(num * 100) / 100.0
 def MaxCount(problist, CalcMode):
     n = []
     tmp = sorted(problist, key = lambda i:i["暴击概率" if CalcMode else "连击概率"])
-    
     i = 3 if len(tmp) - 1 > 3 else len(tmp) - 1
     for x in tmp[-i:]:
         if (x["暴击概率" if CalcMode else "连击概率"] > 0):
             n.append([x["发生次数"], x["暴击概率" if CalcMode else "连击概率"]])
     return n
+
+def attmin(List):
+    tmp = sorted(List, key = lambda l:l[0])
+    return tmp[0][0]
+
+def attmid(List):
+    Total = 0
+    TotalProb = 0
+    for l in List:
+        Total = Total + l[0] * l[1]
+        TotalProb = TotalProb + l[1]
+    return Total * (100 / TotalProb) / 100
+
+def attmax(List):
+    tmp = sorted(List, key = lambda l:l[0])
+    return tmp[-1][0]
 
 '''
     AttackList - 技能总数据
@@ -265,7 +280,7 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
                         Attack_CRT = Count[0] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * (50 / 100)
                     else:
                         Attack_CRT = 0
-                    AttackProbList.append(Attack_CRT + Attack_EXT + Attack_P)
+                    AttackProbList.append([Attack_CRT + Attack_EXT + Attack_P, Count[1]])
             else:
                 # 以暴击为主
                 # 暴击附加伤害等于
@@ -283,18 +298,18 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
                         Attack_EXT = Count[0] * (AttackPower / 100) * Auxiliary_EXT * ((AmplifyDamage + 100) / 100) * ((Combo + SingleSkill["连携加成"] / 2) / 100)
                     else:
                         Attack_EXT = 0
-                    AttackProbList.append(Attack_EXT + Attack_CRT + Attack_P)
+                    AttackProbList.append([Attack_EXT + Attack_CRT + Attack_P, Count[1]])
 
             # Attack_Total = Attack_EXT + Attack_CRT + Attack_P
-            AttackProbList = list(set(AttackProbList))
-            print("技能伤害输出", int(AttackProbList[0]) if len(AttackProbList) == 1 else str(int(min(AttackProbList))) + " <-> " + str(int(max(AttackProbList))), "点伤害。")
+            # AttackProbList = list(set(AttackProbList))
+            print("技能伤害输出", int(AttackProbList[0][0]) if len(AttackProbList) == 1 else str(int(attmin(AttackProbList))) + " <- " + str(int(attmid(AttackProbList))) + " -> " + str(int(attmax(AttackProbList))), "点伤害。")
         print("该段攻击结束")
     print("概率运算结束")
     return CurrentCombo
 
 if __name__ == '__main__':
     Team = [
-        Felt(2097, 6, [100, 14.5], [17.5, 150]),
+        Emilia(2097, 6, [100, 14.5], [17.5, 150]),
         # Emilia(基础攻击, 伤害加成,[80, 10], [188, 17.5]),
         # Emilia(1429, [80, 10], [188, 17.5])
     ]
