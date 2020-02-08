@@ -78,6 +78,48 @@ class Emilia(Character):
         self.Probability = Probability
         self.Auxiliary = Auxiliary
 
+class Crusch(Character):
+    CharName = "库珥修·晚宴的女主人"
+    Skill = {
+        # 剑气犹如细丝般贯穿敌人，对目标单体造成100%攻击力的伤害
+        "A": {
+            "LV1": [(4, 0, 100, 20)],
+            "LV2": [(4, 0, 105, 22)],
+            "LV3": [(4, 0, 110, 24)],
+            "LV4": [(4, 0, 115, 26)],
+            "LV5": [(4, 0, 125, 30)]
+        },
+        # 用7段具有自身50%攻击力的剑气攻击敌方
+        "AP": {
+            "LV1": [(6, 0, 50 * 6, 0), (2, 0, 100, 0), (1, 1, 50, 10)],
+            "LV2": [(6, 0, 52.5 * 6, 0), (2, 0, 100, 0), (1, 1, 52.5, 10)],
+            "LV3": [(6, 0, 55 * 6, 0), (2, 0, 100, 0), (1, 1, 55, 10)],
+            "LV4": [(6, 0, 57.5 * 6, 0, (2, 0, 100, 0)), (1, 1, 57.5, 10)],
+            "LV5": [(6, 0, 62.5 * 6, 0), (2, 0, 100, 0), (1, 1, 62.5, 10)]
+        },
+        # 剑气化作流星雨坠向敌方全体，对每个敌人皆造成总共120%攻击力的3段伤害。
+        "SP": {
+            "LV1": [(3, 1, 120, 10), (3, 0, 100, 0)],
+            "LV2": [(3, 1, 126, 10), (3, 0, 100, 0)],
+            "LV3": [(3, 1, 132, 10), (3, 0, 100, 0)],
+            "LV4": [(3, 1, 138, 10), (3, 0, 100, 0)],
+            "LV5": [(3, 1, 150, 10), (3, 0, 100, 0)]
+        },
+        # 与威尔海姆合力施展华丽的超绝剑之絁，对目标单体造成300%攻击力的伤害
+        "B": {
+            "LV1": [(1, 0, 300, 20)],
+            "LV2": [(1, 0, 315, 20)],
+            "LV3": [(1, 0, 330, 20)],
+            "LV4": [(1, 0, 345, 20)],
+            "LV5": [(1, 0, 360, 20)]
+        }
+    }
+    def __init__(self, AttackPower = 1299, AmplifyDamage = 0, Probability = [17, 3], Auxiliary = [15, 150]):
+        self.Attack["基础攻击"] = AttackPower
+        self.Attack["伤害加成"] = AmplifyDamage
+        self.Probability = Probability
+        self.Auxiliary = Auxiliary
+
 class Felt(Character):
     CharName = "菲鲁特·偷窃徽章"
     Skill = {
@@ -179,6 +221,8 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
     # Probability = 1 if Probability > 1 else Probability
     Probability_EXT = (Probability_EXT > 100 and 100 or Probability_EXT)
     Probability_CRT = (Probability_CRT > 100 and 100 or Probability_CRT)
+    HeppenProbabilityThreshold_EXT = []
+    HeppenProbabilityThreshold_CRT = []
 
     for AttackInfo in AttackList:
         LList = []
@@ -221,33 +265,34 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
         # 输出最大概率次数，过滤低于阈值事件
         HeppenProbabilityList_EXT.sort()
         HeppenProbabilityList_CRT.sort()
-        HeppenProbabilityThreshold_EXT = round_up(max(HeppenProbabilityList_EXT) * Deviation)
-        HeppenProbabilityThreshold_CRT = round_up(max(HeppenProbabilityList_CRT) * Deviation)
+        HeppenProbabilityThreshold_EXT_TMP = round_up(max(HeppenProbabilityList_EXT) * Deviation)
+        HeppenProbabilityThreshold_CRT_TMP = round_up(max(HeppenProbabilityList_CRT) * Deviation)
         n = 3 if 3 < len(HeppenProbabilityList_EXT) - 1 else len(HeppenProbabilityList_EXT) - 1
-        if ((HeppenProbabilityThreshold_EXT > HeppenProbabilityList_EXT[-n]) and HeppenProbabilityList_EXT[-n] > 0):
-            HeppenProbabilityThreshold_EXT = HeppenProbabilityList_EXT[-n]
+        if ((HeppenProbabilityThreshold_EXT_TMP > HeppenProbabilityList_EXT[-n]) and HeppenProbabilityList_EXT[-n] > 5):
+            HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-n])
         else:
-            HeppenProbabilityThreshold_EXT = HeppenProbabilityList_EXT[-1]
+            HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-1])
+
         n = 3 if 3 < len(HeppenProbabilityList_CRT) - 1 else len(HeppenProbabilityList_CRT) - 1
-        if ((HeppenProbabilityThreshold_CRT > HeppenProbabilityList_CRT[-n]) and HeppenProbabilityList_CRT[-n] > 0):
-            HeppenProbabilityThreshold_CRT = HeppenProbabilityList_CRT[-n]
+        if ((HeppenProbabilityThreshold_CRT_TMP > HeppenProbabilityList_CRT[-n]) and HeppenProbabilityList_CRT[-n] > 5):
+            HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-n])
         else:
-            HeppenProbabilityThreshold_CRT = HeppenProbabilityList_CRT[-1]
-        
+            HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-1])
+    CountTimes = 0
     AttackValue = 0
     for AttackInfo in Skill:
         for SingleSkill in AttackInfo:
             HeppenProbability_EXT = SingleSkill["连击概率"]
             HeppenProbability_CRT = SingleSkill["暴击概率"]
-            if (HeppenProbability_EXT < HeppenProbabilityThreshold_EXT and not CalcMode):
+            if (HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes] and not CalcMode):
                 continue
-            if (HeppenProbability_CRT < HeppenProbabilityThreshold_CRT and CalcMode):
+            if (HeppenProbability_CRT < HeppenProbabilityThreshold_CRT[CountTimes] and CalcMode):
                 continue
             elif (abs(HeppenProbability_EXT - HeppenProbability_CRT) == 100 and SingleSkill["发生次数"] == 0):
                 continue
             else:
-                HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT else HeppenProbability_EXT
-                HeppenProbability_CRT = 0 if HeppenProbability_CRT < HeppenProbabilityThreshold_CRT else HeppenProbability_CRT
+                HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes] else HeppenProbability_EXT
+                HeppenProbability_CRT = 0 if HeppenProbability_CRT < HeppenProbabilityThreshold_CRT[CountTimes] else HeppenProbability_CRT
             # 发生次数、连击概率、暴击概率等
             print("发生", SingleSkill["发生次数"], "次：", "连击" if not CalcMode else "暴击", "概率", SingleSkill["连击概率"] if not CalcMode else SingleSkill["暴击概率"], "%")
             AttackPower = AttackV["基础攻击"]
@@ -304,21 +349,22 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Deviat
             # AttackProbList = list(set(AttackProbList))
             print("技能伤害输出", int(AttackProbList[0][0]) if len(AttackProbList) == 1 else str(int(attmin(AttackProbList))) + " <- " + str(int(attmid(AttackProbList))) + " -> " + str(int(attmax(AttackProbList))), "点伤害。")
         print("该段攻击结束")
+        CountTimes = CountTimes + 1
     print("概率运算结束")
     return CurrentCombo
 
 if __name__ == '__main__':
     Team = [
-        Emilia(2097, 6, [100, 14.5], [17.5, 150]),
-        # Emilia(基础攻击, 伤害加成,[80, 10], [188, 17.5]),
-        # Emilia(1429, [80, 10], [188, 17.5])
+        Crusch(2097, 6, [3, 95], [17.5, 150]),
+        # 角色(基础攻击, 伤害加成, [连击率, 暴击率], [连击伤害, 暴击伤害]),
+        # FeltCruschEmilia(2097, 6, [50, 100], [17.5, 150])
     ]
 
     index = 1
     Combo = 100
     for Member in Team:
         index = index + 1
-        Combo = Combo + SkillDamage(Member.Skill["A"]["LV1"], Member.Attack, Member.Probability, Member.Auxiliary, Combo)
+        Combo = Combo + SkillDamage(Member.Skill["SP"]["LV1"], Member.Attack, Member.Probability, Member.Auxiliary, Combo)
         if index > 3: Combo = 100
     # SkillDamage([(3, 0, 375)], [3.2, 0], [40, 5])
     
