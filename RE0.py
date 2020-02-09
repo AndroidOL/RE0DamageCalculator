@@ -1,12 +1,16 @@
 class Character:
+    SKILLTYPE = ["普通攻击", "AP 技能", "SP 技能", "必杀技能"]
     Attack = {
         "基础攻击": 0,
         "伤害加成": 0
     }
     Probability = [0, 0]
     Auxiliary = [150, 1.5]
+    AttackValue = [0, 0, 0]
     Skill = {
         "A": {
+            "TYPE": 0,
+            "NAME": "",
             "LV1": [(0, 0, 0, 0)],
             "LV2": [(0, 0, 0, 0)],
             "LV3": [(0, 0, 0, 0)],
@@ -14,6 +18,8 @@ class Character:
             "LV5": [(0, 0, 0, 0)]
         },
         "AP": {
+            "TYPE": 1,
+            "NAME": "",
             "LV1": [(0, 0, 0, 0)],
             "LV2": [(0, 0, 0, 0)],
             "LV3": [(0, 0, 0, 0)],
@@ -21,6 +27,8 @@ class Character:
             "LV5": [(0, 0, 0, 0)]
         },
         "SP": {
+            "TYPE": 2,
+            "NAME": "",
             "LV1": [(0, 0, 0, 0)],
             "LV2": [(0, 0, 0, 0)],
             "LV3": [(0, 0, 0, 0)],
@@ -28,6 +36,8 @@ class Character:
             "LV5": [(0, 0, 0, 0)]
         },
         "B": {
+            "TYPE": 3,
+            "NAME": "",
             "LV1": [(0, 0, 0, 0)],
             "LV2": [(0, 0, 0, 0)],
             "LV3": [(0, 0, 0, 0)],
@@ -35,12 +45,18 @@ class Character:
             "LV5": [(0, 0, 0, 0)]
         }
     }
+    def AttackValues(self, attminV, attmidV, attmaxV):
+        self.AttackValue[0] = self.AttackValue[0] + attminV
+        self.AttackValue[1] = self.AttackValue[1] + attmidV
+        self.AttackValue[2] = self.AttackValue[2] + attmaxV
 
 class Emilia(Character):
     CharName = "爱蜜莉雅·朦胧的睡意"
     Skill = {
         # 引动冰雪攻击敌方全体，对目标造成攻击力36%的伤害
         "A": {
+            "TYPE": 0,
+            "NAME": "冰屑席卷",
             "LV1": [(3, 1, 36, 10)],
             "LV2": [(3, 1, 37, 11)],
             "LV3": [(3, 1, 39, 12)],
@@ -49,6 +65,8 @@ class Emilia(Character):
         },
         # 对敌方所有目标进行攻击，造成攻击力80%的伤害
         "AP": {
+            "TYPE": 1,
+            "NAME": "温柔冰花",
             "LV1": [(8, 1, 80, 10)],
             "LV2": [(8, 1, 84, 10)],
             "LV3": [(8, 1, 88, 10)],
@@ -57,6 +75,8 @@ class Emilia(Character):
         },
         # 与帕克一起对敌方全体造成136%伤害，由所有敌人分摊
         "SP": {
+            "TYPE": 2,
+            "NAME": "冰冻境地",
             "LV1": [(4, 1, 45.33, 10)],
             "LV2": [(4, 1, 47.33, 10)],
             "LV3": [(4, 1, 49.67, 10)],
@@ -65,6 +85,8 @@ class Emilia(Character):
         },
         # 对敌人全体造成240%伤害
         "B": {
+            "TYPE": 3,
+            "NAME": "冰冻术(群体)",
             "LV1": [(1, 1, 80, 10)],
             "LV2": [(1, 1, 84, 10)],
             "LV3": [(1, 1, 88, 10)],
@@ -83,6 +105,8 @@ class Crusch(Character):
     Skill = {
         # 剑气犹如细丝般贯穿敌人，对目标单体造成100%攻击力的伤害
         "A": {
+            "TYPE": 0,
+            "NAME": "剑之絁",
             "LV1": [(4, 0, 100, 20)],
             "LV2": [(4, 0, 105, 22)],
             "LV3": [(4, 0, 110, 24)],
@@ -91,6 +115,8 @@ class Crusch(Character):
         },
         # 用7段具有自身50%攻击力的剑气攻击敌方
         "AP": {
+            "TYPE": 1,
+            "NAME": "剑岚之奔流",
             "LV1": [(6, 0, 50 * 6, 0), (2, 0, 100, 0), (1, 1, 50, 10)],
             "LV2": [(6, 0, 52.5 * 6, 0), (2, 0, 100, 0), (1, 1, 52.5, 10)],
             "LV3": [(6, 0, 55 * 6, 0), (2, 0, 100, 0), (1, 1, 55, 10)],
@@ -99,6 +125,8 @@ class Crusch(Character):
         },
         # 剑气化作流星雨坠向敌方全体，对每个敌人皆造成总共120%攻击力的3段伤害。
         "SP": {
+            "TYPE": 2,
+            "NAME": "流星之剑阵",
             "LV1": [(3, 1, 120, 10), (3, 0, 100, 0)],
             "LV2": [(3, 1, 126, 10), (3, 0, 100, 0)],
             "LV3": [(3, 1, 132, 10), (3, 0, 100, 0)],
@@ -107,6 +135,8 @@ class Crusch(Character):
         },
         # 与威尔海姆合力施展华丽的超绝剑之絁，对目标单体造成300%攻击力的伤害
         "B": {
+            "TYPE": 3,
+            "NAME": "苍华·剑之絁",
             "LV1": [(1, 0, 300, 20)],
             "LV2": [(1, 0, 315, 20)],
             "LV3": [(1, 0, 330, 20)],
@@ -125,6 +155,8 @@ class Felt(Character):
     Skill = {
         # 闪身到目标背后进行一次攻击
         "A": {
+            "TYPE": 0,
+            "NAME": "突袭",
             "LV1": [(1, 0, 100, 20)],
             "LV2": [(1, 0, 105, 22)],
             "LV3": [(1, 0, 110, 24)],
@@ -133,6 +165,8 @@ class Felt(Character):
         },
         # 攻击目标3次造成200%的伤害
         "AP": {
+            "TYPE": 1,
+            "NAME": "金色刀锋",
             "LV1": [(3, 0, 200, 20)],
             "LV2": [(3, 0, 210, 20)],
             "LV3": [(3, 0, 220, 20)],
@@ -141,6 +175,8 @@ class Felt(Character):
         },
         # 瞬移到目标身边，对目标造成120%攻击的伤害
         "SP": {
+            "TYPE": 2,
+            "NAME": "快腿",
             "LV1": [(2, 0, 120, 20)],
             "LV2": [(2, 0, 126, 20)],
             "LV3": [(2, 0, 132, 20)],
@@ -149,6 +185,8 @@ class Felt(Character):
         },
         # 对目标进行攻击造成360%的伤害
         "B": {
+            "TYPE": 3,
+            "NAME": "疾风",
             "LV1": [(1, 0, 360, 20)],
             "LV2": [(1, 0, 378, 20)],
             "LV3": [(1, 0, 396, 20)],
@@ -164,8 +202,7 @@ class Felt(Character):
 
 class Monster:
     Def = 0
-
-    def __init__(self, Def, Buff = 1):
+    def __init__(self, Def = 375, Buff = 1):
         self.Def = Def * Buff
 
 fact = lambda n: [1, 0][n > 1] or fact(n - 1) * n
@@ -181,9 +218,9 @@ def MaxCount(problist, CalcMode):
             n.append([x["发生次数"], x["暴击概率" if CalcMode else "连击概率"]])
     return n
 
-def attmin(List):
-    tmp = sorted(List, key = lambda l:l[0])
-    return tmp[0][0]
+def attmin(List, index = 0):
+    tmp = sorted(List, key = lambda l:l[index])
+    return tmp[0][index]
 
 def attmid(List):
     Total = 0
@@ -193,9 +230,32 @@ def attmid(List):
         TotalProb = TotalProb + l[1]
     return Total * (100 / TotalProb) / 100
 
-def attmax(List):
-    tmp = sorted(List, key = lambda l:l[0])
-    return tmp[-1][0]
+def attmax(List, index = 0):
+    tmp = sorted(List, key = lambda l:l[index])
+    return tmp[-1][index]
+
+def Analyse(List):
+    maxV = 0
+    skillVL = []
+    for l in List:
+        maxV = maxV if maxV > attmax(l, 2) else attmax(l, 2)
+    for l in List:
+        skillV = []
+        for skill in l:
+            if (skill[2] > maxV - 10):
+                skillV.append(skill)
+        if (len(skillV)):
+            skillVL.append(skillV)
+
+    minatt, midatt, maxatt = 0, 0, 0
+    for skill in skillVL:
+        minatt = minatt + attmin(skill)
+        midatt = midatt + attmid(skill)
+        maxatt = maxatt + attmax(skill)
+    # attmin(skillV), attmid(skillV), attmax(skillV)
+    if (len(skillVL)):
+        return int(minatt / len(skillVL)), int(midatt / len(skillVL)), int(maxatt / len(skillVL))
+    return 0, 0, 0
 
 '''
     AttackList - 技能总数据
@@ -213,10 +273,13 @@ def attmax(List):
     Deviation - 范围偏差（0.2大范围至0.8普遍）
     # CalcMode - 连击(0)或暴击(1)计算
 ''' 
-def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, MonsterList = [], Deviation = 0.5):
+def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] * 3, Deviation = 0.2):
     Skill = []
     CurrentCombo = 0
     DefDePercent = 0
+    AttackV = CharCard.Attack
+    Probability = CharCard.Probability
+    Auxiliary = CharCard.Auxiliary
     if (len(MonsterList)):
         DefPercent = 0
         for Monster in MonsterList:
@@ -282,19 +345,22 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Monste
         HeppenProbabilityThreshold_EXT_TMP = round_up(max(HeppenProbabilityList_EXT) * Deviation)
         HeppenProbabilityThreshold_CRT_TMP = round_up(max(HeppenProbabilityList_CRT) * Deviation)
         n = 3 if 3 < len(HeppenProbabilityList_EXT) - 1 else len(HeppenProbabilityList_EXT) - 1
-        if ((HeppenProbabilityThreshold_EXT_TMP > HeppenProbabilityList_EXT[-n]) and HeppenProbabilityList_EXT[-n] > 5):
-            HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-n])
-        else:
-            HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-1])
+        for i in range(1, n + 1):
+            x = n + 1 - i
+            if ((HeppenProbabilityThreshold_EXT_TMP < HeppenProbabilityList_EXT[-x]) and HeppenProbabilityList_EXT[-x] > 5):
+                HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-x])
 
         n = 3 if 3 < len(HeppenProbabilityList_CRT) - 1 else len(HeppenProbabilityList_CRT) - 1
-        if ((HeppenProbabilityThreshold_CRT_TMP > HeppenProbabilityList_CRT[-n]) and HeppenProbabilityList_CRT[-n] > 5):
-            HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-n])
-        else:
-            HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-1])
+        for i in range(1, n + 1):
+            x = n + 1 - i
+            if ((HeppenProbabilityThreshold_CRT_TMP < HeppenProbabilityList_CRT[-n]) and HeppenProbabilityList_CRT[-n] > 5):
+                HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-n])
     CountTimes = 0
     AttackValue = 0
+    CharCard.AttackValue = [0, 0, 0]
     for AttackInfo in Skill:
+        AttackProbListPercent = 0
+        AttackProbListAnalyse = []
         for SingleSkill in AttackInfo:
             HeppenProbability_EXT = SingleSkill["连击概率"]
             HeppenProbability_CRT = SingleSkill["暴击概率"]
@@ -308,7 +374,8 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Monste
                 HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes] else HeppenProbability_EXT
                 HeppenProbability_CRT = 0 if HeppenProbability_CRT < HeppenProbabilityThreshold_CRT[CountTimes] else HeppenProbability_CRT
             # 发生次数、连击概率、暴击概率等
-            print("发生", SingleSkill["发生次数"], "次：", "连击" if not CalcMode else "暴击", "概率", SingleSkill["连击概率"] if not CalcMode else SingleSkill["暴击概率"], "%")
+            AttackProbListPercent = SingleSkill["连击概率"] if not CalcMode else SingleSkill["暴击概率"]
+            print("发生", SingleSkill["发生次数"], "次：", "连击" if not CalcMode else "暴击", "概率", AttackProbListPercent, "%")
             AttackPower = AttackV["基础攻击"]
             AmplifyDamage = AttackV["伤害加成"]
             # 常规攻击伤害等于
@@ -339,7 +406,7 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Monste
                         Attack_CRT = Count[0] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent
                     else:
                         Attack_CRT = 0
-                    AttackProbList.append([Attack_CRT + Attack_EXT + Attack_P, Count[1]])
+                    AttackProbList.append([Attack_CRT + Attack_EXT + Attack_P, Count[1], AttackProbListPercent])
             else:
                 # 以暴击为主
                 # 暴击附加伤害等于
@@ -357,25 +424,30 @@ def SkillDamage(AttackList, AttackV, Probability, Auxiliary, Combo = 100, Monste
                         Attack_EXT = Count[0] * (AttackPower / 100) * Auxiliary_EXT * ((AmplifyDamage + 100) / 100) * ((Combo + SingleSkill["连携加成"] / 2) / 100)
                     else:
                         Attack_EXT = 0
-                    AttackProbList.append([Attack_EXT + Attack_CRT + Attack_P, Count[1]])
+                    AttackProbList.append([Attack_EXT + Attack_CRT + Attack_P, Count[1], AttackProbListPercent])
 
             # Attack_Total = Attack_EXT + Attack_CRT + Attack_P
             # AttackProbList = list(set(AttackProbList))
             print("技能伤害输出", int(AttackProbList[0][0]) if len(AttackProbList) == 1 else str(int(attmin(AttackProbList))) + " <- " + str(int(attmid(AttackProbList))) + " -> " + str(int(attmax(AttackProbList))), "点伤害。")
+            AttackProbListAnalyse.append(AttackProbList)
         print("该段攻击结束")
+        minVT, midVT, maxVT = Analyse(AttackProbListAnalyse)
+        CharCard.AttackValues(minVT, midVT, maxVT)
         CountTimes = CountTimes + 1
     print("概率运算结束")
     return CurrentCombo
 
 if __name__ == '__main__':
     Team = [
-        Crusch(2823, 12, [17, 80], [15.0, 177]),
+        Emilia(3000, 12, [90, 30], [15.0, 200]),
+        Felt(3000, 12, [90, 30], [15.0, 200]),
+        Crusch(3000, 12, [90, 30], [15.0, 200])
         # 角色(基础攻击, 伤害加成, [连击率, 暴击率], [连击伤害, 暴击伤害]),
-        # FeltCruschEmilia(2097, 6, [50, 100], [17.5, 150])
+        # Felt / Crusch / Emilia(2097, 6, [50, 100], [17.5, 150])
     ]
 
     MonsterList =[
-        Monster(375, 4)
+        Monster(375, 1)
         # Monster(初始防御率, 增防减伤 Buff)
     ]
 
@@ -383,7 +455,9 @@ if __name__ == '__main__':
     Combo = 100
     for Member in Team:
         index = index + 1
-        Combo = Combo + SkillDamage(Member.Skill["AP"]["LV1"], Member.Attack, Member.Probability, Member.Auxiliary, Combo, MonsterList)
+        print("当前出手：", Member.CharName, "【连携加成：", Combo, "%】")
+        Combo = Combo + SkillDamage(Member.Skill["AP"]["LV1"], Member, Combo, MonsterList)
+        print("结束技能：", Member.AttackValue)
         if index > 3: Combo = 100
     # SkillDamage([(3, 0, 375)], [3.2, 0], [40, 5])
     
