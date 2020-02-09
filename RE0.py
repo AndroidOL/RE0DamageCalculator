@@ -459,5 +459,4 @@ if __name__ == '__main__':
         Combo = Combo + SkillDamage(Member.Skill["AP"]["LV1"], Member, Combo, MonsterList)
         print("结束技能：", Member.AttackValue)
         if index > 3: Combo = 100
-    # SkillDamage([(3, 0, 375)], [3.2, 0], [40, 5])
     
