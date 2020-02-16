@@ -349,12 +349,11 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
             x = n + 1 - i
             if ((HeppenProbabilityThreshold_EXT_TMP < HeppenProbabilityList_EXT[-x]) and HeppenProbabilityList_EXT[-x] > 5):
                 HeppenProbabilityThreshold_EXT.append(HeppenProbabilityList_EXT[-x])
-
         n = 3 if 3 < len(HeppenProbabilityList_CRT) - 1 else len(HeppenProbabilityList_CRT) - 1
         for i in range(1, n + 1):
             x = n + 1 - i
-            if ((HeppenProbabilityThreshold_CRT_TMP < HeppenProbabilityList_CRT[-n]) and HeppenProbabilityList_CRT[-n] > 5):
-                HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-n])
+            if ((HeppenProbabilityThreshold_CRT_TMP < HeppenProbabilityList_CRT[-x]) and HeppenProbabilityList_CRT[-x] > 5):
+                HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-x])
     CountTimes = 0
     AttackValue = 0
     CharCard.AttackValue = [0, 0, 0]
@@ -443,13 +442,15 @@ if __name__ == '__main__':
     Team = [
         # Emilia(3000, 12, [90, 30], [15.0, 200]),
         # Felt(3000, 12, [90, 30], [15.0, 200]),
-        Crusch(3300, 30, [0, 100], [15.0, 250])
+        Emilia(2760, 30, [100, 0], [15.0, 200])
         # 角色(基础攻击, 伤害加成, [连击率, 暴击率], [连击伤害, 暴击伤害]),
         # Felt / Crusch / Emilia(2097, 6, [50, 100], [17.5, 150])
     ]
 
     MonsterList =[
-        Monster(375, 1)
+        Monster(375, 4),
+        Monster(375, 4),
+        Monster(375, 4)
         # Monster(初始防御率, 增防减伤 Buff)
     ]
 
