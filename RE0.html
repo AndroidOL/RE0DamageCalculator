@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="cmn-Hans-CN">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="expires" content="0">
+		<meta name="author" content="Tianhao Wu">
+		<meta name="keywords" content="RE0">
+		<title>RE0 手游伤害计算器</title>
+	</head>
+	<body>
+		<div id="Character">
+			<div id="Character_select">
+				<label for="Character_select_selector">请选择角色</label>
+				<select name="Character_select_selector" id="Character_select_selector">
+					<option value="Crusch">库珥修·晚宴的女主人</option>
+					<option value="Ram">幼年拉姆·纸风车的约定</option>
+					<option value="Emilia">爱蜜莉雅·朦胧的睡意</option>
+					<option value="blank" selected="selected">空白</option>
+				</select>
+			</div>
+		</div>
+		<div id="Data">
+			<div id="Data_Att">
+				<label>攻击：
+					<input type="number" id="Data_input_Att" value="1" min="1" max="9999" step="1" />
+				</label>
+			</div>
+			<div id="Data_Ext">
+				<label>连击率 (%)：
+					<input type="number" id="Data_input_Ext" value="0" min="0" max="100" step="0.01" />
+				</label>
+			</div>
+			<div id="Data_ExtAdd">
+				<label>连击伤害 (%)：
+					<input type="number" id="Data_input_ExtAdd" value="15" min="15" max="999" step="0.01" />
+				</label>
+			</div>
+			<div id="Data_Crt">
+				<label>暴击率 (%)：
+					<input type="number" id="Data_input_Crt" value="0" min="0" max="100" step="0.01" />
+				</label>
+			</div>
+			<div id="Data_CrtAdd">
+				<label>暴击伤害 (%)：
+					<input type="number" id="Data_input_CrtAdd" value="150" min="150" max="999" step="0.01" />
+				</label>
+			</div>
+			<div id="Data_Assist">
+				<label>选择辅助角色（未完成）：</label>
+				<br />
+				<input type="checkbox" id="Data_Assist_Rozuwaru" value="Rozuwaru" />
+				<label for="Data_Assist_Rozuwaru">罗兹瓦尔·夜阑已至</label>
+				<br />
+				<input type="checkbox" id="Data_Assist_Crusch" value="Data_Assist_Crusch" />
+				<label for="Data_Assist_Crusch">库珥修·铠甲的英姿</label>
+				<br />
+				<input type="checkbox" id="Data_Assist_Rem" value="Data_Assist_Rem" />
+				<label for="Data_Assist_Rem">雷姆·小荷月色</label>
+			</div>
+		</div>
+		<div id="Skill">
+			<div id="Skill_a">
+				<p>普通技能《<span id="Skill_label_a_name">未知</span>》</p>
+				<label>技能等级：
+					<input type="number" id="Skill_level_a" value="1" min="1" max="5" />
+				</label>
+			</div>
+			<div id="Skill_ap">
+				<p> AP 技能《<span id="Skill_label_ap_name">未知</span>》</p>
+				<label>技能等级：
+					<input type="number" id="Skill_level_ap" value="1" min="1" max="5" />
+				</label>
+			</div>
+			<div id="Skill_SP">
+				<p> SP 技能《<span id="Skill_label_sp_name">未知</span>》</p>
+				<label>技能等级：
+					<input type="number" id="Skill_level_sp" value="1" min="1" max="5" />
+				</label>
+			</div>
+			<div id="Skill_b">
+				<p>必杀技能《<span id="Skill_label_b_name">未知</span>》</p>
+				<label>技能等级：
+					<input type="number" id="Skill_level_b" value="1" min="1" max="5" />
+				</label>
+			</div>
+		</div>
+		<div>
+			<div id="Monster">
+				<label>选择敌人：</label>
+				<br />
+				<input type="checkbox" id="Monster_bc" value="majokyou_taizaishikyou" checked="checked" disabled="disabled" />
+				<label for="Monster_c">魔女教大罪司教「怠惰」担当</label>
+				<br />
+				<input type="checkbox" id="Monster_xl" value="majokyou" />
+				<label for="Monster_l">魔女教徒</label>
+				<br />
+				<input type="checkbox" id="Monster_xr" value="majokyou" />
+				<label for="Monster_r">魔女教徒</label>
+				<br />
+			</div>
+		</div>
+		<div>
+			<div id="Damage">
+				<input type="button" id="load" value="读入" />
+				<input type="button" id="save" value="存储" disabled="disabled" />
+				<input type="button" id="dele" value="清除" />
+				<input type="button" id="calc" value="计算" disabled="disabled" />
+			</div>
+		</div>
+		<script>
+			function MakeCharacter() {
+				var Character = new Object();
+				// 获取角色名称
+				const selectElement = document.querySelector('#Character_select_selector');
+				var selectElementOption = selectElement.options;
+				var selectElementIndex = selectElement.selectedIndex;
+				var selectElementValue = selectElementOption[selectElementIndex].value;
+				Character.name = selectElementValue;
+
+				// 获取角色攻击力
+				Character.attack = document.getElementById("Data_input_Att").value;
+
+				// 获取连击率以及连击伤害
+				const ext_info = document.querySelectorAll('input[id ^= "Data_input_Ext"]');
+				Character.ext = ext_info[0].value;
+				Character.extadd = ext_info[1].value;
+
+				// 获取暴击率以及暴击伤害
+				const crt_info = document.querySelectorAll('input[id ^= "Data_input_Crt"]');
+				Character.crt = crt_info[0].value;
+				Character.crtadd = crt_info[1].value;
+
+				// 获取辅助角色信息
+				const assist_info = document.querySelectorAll('input[id ^= "Data_Assist"]');
+				Character.assist = new Array()
+				for (i = 0; i < assist_info.length; i++) { Character.assist[i] = assist_info[i].checked; }
+
+				// 获取技能等级
+				const skill_info = document.querySelectorAll('input[id ^= "Skill_level"]');
+				Character.skilllevel = new Array()
+				for (i = 0; i < skill_info.length; i++) { Character.skilllevel[i] = skill_info[i].value; }
+
+				// 获取敌人信息
+				const monster_info = document.querySelectorAll('input[id ^= "Monster_x"]');
+				Character.monsterinfo = new Array()
+				for (i = 0; i < monster_info.length; i++) { Character.monsterinfo[i] = monster_info[i].checked; }
+				return Character;
+			}
+
+			const inputElements = document.querySelectorAll('input[type="number"]');
+
+			for (let i = 0; i < inputElements.length; i++) {
+				inputElements[i].addEventListener('click', (event) => {
+					inputElements[i].focus();
+					inputElements[i].select();
+					
+				}, "false");
+			}
+
+			const selectElement = document.querySelector('#Character_select_selector');
+			selectElement.addEventListener('change', (event) => {
+				const option_blank = document.querySelector('select[name="Character_select_selector"] option:last-child');
+				if (!option_blank.disabled) { option_blank.disabled = true; }
+				const button_all = document.querySelectorAll('input[type="button"]');
+				for (i = 0; i < button_all.length; i++) { button_all[i].disabled = false; }
+				var selectElementIndex = selectElement.selectedIndex;
+				var selectElementOption = selectElement.options;
+				var selectElementText = selectElementOption[selectElementIndex].text;
+				var selectElementValue = selectElementOption[selectElementIndex].value;
+				console.log("当前选择第" + (selectElementIndex + 1) + "项，人物：" + selectElementText + "[" + selectElementValue + "]。")
+			});
+			const loadElement = document.querySelector('#load');
+			loadElement.addEventListener('click', (event) => {
+				if (Character_JSON = localStorage.getItem("Character")) {
+					Character = JSON.parse(Character_JSON)
+					// 设置角色名称
+					for (selectElementIndex = 0; selectElementIndex < selectElement.options.length; selectElementIndex++) {
+						if (Character.name == selectElement[selectElementIndex].value) {
+							selectElement[selectElementIndex].selected = true;
+							var myEvent = new Event('change');
+							selectElement.dispatchEvent(myEvent);
+						}
+					}
+
+					// 设置角色攻击力
+					document.getElementById("Data_input_Att").value = Character.attack;
+
+					// 设置连击率以及连击伤害
+					const ext_info = document.querySelectorAll('input[id ^= "Data_input_Ext"]');
+					ext_info[0].value = Character.ext;
+					ext_info[1].value = Character.extadd;
+
+					// 设置暴击率以及暴击伤害
+					const crt_info = document.querySelectorAll('input[id ^= "Data_input_Crt"]');
+					crt_info[0].value = Character.crt;
+					crt_info[1].value = Character.crtadd;
+
+					// 设置辅助角色信息
+					const assist_info = document.querySelectorAll('input[id ^= "Data_Assist"]');
+					for (i = 0; i < assist_info.length; i++) { assist_info[i].checked = Character.assist[i]; }
+
+					// 设置技能等级
+					const skill_info = document.querySelectorAll('input[id ^= "Skill_level"]');
+					for (i = 0; i < skill_info.length; i++) { skill_info[i].value = Character.skilllevel[i]; }
+
+					// 设置敌人信息
+					const monster_info = document.querySelectorAll('input[id ^= "Monster_x"]');
+					for (i = 0; i < monster_info.length; i++) { monster_info[i].checked = Character.monsterinfo[i]; }
+					console.log("已载入数据")
+				} else {
+					console.log("数据不存在")
+				}
+			});
+			const saveElement = document.querySelector('#save');
+			saveElement.addEventListener('click', (event) => {
+				Character = MakeCharacter();
+				Character_JSON = JSON.stringify(Character);
+				localStorage.setItem("Character", Character_JSON);
+				console.log("已存储数据")
+			});
+			const deleElement = document.querySelector('#dele');
+			deleElement.addEventListener('click', (event) => {
+				localStorage.removeItem("Character");
+				console.log("已删除数据")
+			});
+			const calcElement = document.querySelector('#calc');
+			calcElement.addEventListener('click', (event) => {
+				Character = MakeCharacter();
+				console.log(Character)
+			});
+		</script>
+	</body>
+</html>
