@@ -6,6 +6,7 @@
 		<meta name="author" content="Tianhao Wu">
 		<meta name="keywords" content="RE0">
 		<title>RE0 手游伤害计算器</title>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 	</head>
 	<body>
 		<div id="Character">
@@ -25,6 +26,11 @@
 					<input type="number" id="Data_input_Att" value="1" min="1" max="9999" step="1" />
 				</label>
 			</div>
+			<div id="Data_DA">
+				<label>伤害加成 (%)：
+					<input type="number" id="Data_input_DA" value="0" min="0" max="100" step="0.01" />
+				</label>
+			</div>
 			<div id="Data_Ext">
 				<label>连击率 (%)：
 					<input type="number" id="Data_input_Ext" value="0" min="0" max="100" step="0.01" />
@@ -32,7 +38,7 @@
 			</div>
 			<div id="Data_ExtAdd">
 				<label>连击伤害 (%)：
-					<input type="number" id="Data_input_ExtAdd" value="15" min="15" max="999" step="0.01" />
+					<input type="number" id="Data_input_ExtAdd" value="15" min="15" max="99" step="0.01" />
 				</label>
 			</div>
 			<div id="Data_Crt">
@@ -43,6 +49,11 @@
 			<div id="Data_CrtAdd">
 				<label>暴击伤害 (%)：
 					<input type="number" id="Data_input_CrtAdd" value="150" min="150" max="999" step="0.01" />
+				</label>
+			</div>
+			<div id="Data_TeamWork">
+				<label>连携数值 (%)：
+					<input type="number" id="Data_input_TeamWork" value="100" min="100" max="999" step="1" />
 				</label>
 			</div>
 			<div id="Data_Assist">
@@ -62,25 +73,37 @@
 			<div id="Skill_a">
 				<p>普通技能《<span id="Skill_label_a_name">未知</span>》</p>
 				<label>技能等级：
-					<input type="number" id="Skill_level_a" value="1" min="1" max="5" />
+					<input type="number" id="Skill_level_a" value="1" min="1" max="5" step="1" />
+				</label>
+				<label>技能增益：
+					<input type="number" id="Skill_levelup_a" value="0" min="0" max="72" step="0.01" />
 				</label>
 			</div>
 			<div id="Skill_ap">
 				<p> AP 技能《<span id="Skill_label_ap_name">未知</span>》</p>
 				<label>技能等级：
-					<input type="number" id="Skill_level_ap" value="1" min="1" max="5" />
+					<input type="number" id="Skill_level_ap" value="1" min="1" max="5" step="1" />
+				</label>
+				<label>技能增益：
+					<input type="number" id="Skill_levelup_ap" value="0" min="0" max="72" step="0.01" />
 				</label>
 			</div>
 			<div id="Skill_SP">
 				<p> SP 技能《<span id="Skill_label_sp_name">未知</span>》</p>
 				<label>技能等级：
-					<input type="number" id="Skill_level_sp" value="1" min="1" max="5" />
+					<input type="number" id="Skill_level_sp" value="1" min="1" max="5" step="1" />
+				</label>
+				<label>技能增益：
+					<input type="number" id="Skill_levelup_sp" value="0" min="0" max="72" step="0.01" />
 				</label>
 			</div>
 			<div id="Skill_b">
 				<p>必杀技能《<span id="Skill_label_b_name">未知</span>》</p>
 				<label>技能等级：
-					<input type="number" id="Skill_level_b" value="1" min="1" max="5" />
+					<input type="number" id="Skill_level_b" value="1" min="1" max="5" step="1" />
+				</label>
+				<label>技能增益：
+					<input type="number" id="Skill_levelup_b" value="0" min="0" max="72" step="0.01" />
 				</label>
 			</div>
 		</div>
@@ -90,12 +113,15 @@
 				<br />
 				<input type="checkbox" id="Monster_bc" value="majokyou_taizaishikyou" checked="checked" disabled="disabled" />
 				<label for="Monster_c">魔女教大罪司教「怠惰」担当</label>
+				<input type="number" id="Monster_def_bc" value="375" min="0" max="9999" step="1" />
 				<br />
 				<input type="checkbox" id="Monster_xl" value="majokyou" />
 				<label for="Monster_l">魔女教徒</label>
+				<input type="number" id="Monster_def_xl" value="375" min="0" max="9999" step="1" />
 				<br />
 				<input type="checkbox" id="Monster_xr" value="majokyou" />
 				<label for="Monster_r">魔女教徒</label>
+				<input type="number" id="Monster_def_xr" value="375" min="0" max="9999" step="1" />
 				<br />
 			</div>
 		</div>
@@ -105,6 +131,52 @@
 				<input type="button" id="save" value="存储" disabled="disabled" />
 				<input type="button" id="dele" value="清除" />
 				<input type="button" id="calc" value="计算" disabled="disabled" />
+			</div>
+		</div>
+		<div>
+			<div id="Damage_Result_A">
+				<label>普通技能最低伤害：
+					<input type="number" id="Damage_Result_A_min" disabled="disabled" />
+				</label>
+				<label>普通技能平均伤害：
+					<input type="number" id="Damage_Result_A_mid" disabled="disabled" />
+				</label>
+				<label>普通技能最高伤害：
+					<input type="number" id="Damage_Result_A_max" disabled="disabled" />
+				</label>
+			</div>
+			<div id="Damage_Result_AP">
+				<label> AP 技能最低伤害：
+					<input type="number" id="Damage_Result_AP_min" disabled="disabled" />
+				</label>
+				<label> AP 技能平均伤害：
+					<input type="number" id="Damage_Result_AP_mid" disabled="disabled" />
+				</label>
+				<label> AP 技能最高伤害：
+					<input type="number" id="Damage_Result_AP_max" disabled="disabled" />
+				</label>
+			</div>
+			<div id="Damage_Result_SP">
+				<label> SP 技能最低伤害：
+					<input type="number" id="Damage_Result_SP_min" disabled="disabled" />
+				</label>
+				<label> SP 技能平均伤害：
+					<input type="number" id="Damage_Result_SP_mid" disabled="disabled" />
+				</label>
+				<label> SP 技能最高伤害：
+					<input type="number" id="Damage_Result_SP_max" disabled="disabled" />
+				</label>
+			</div>
+			<div id="Damage_Result_B">
+				<label>必杀技能最低伤害：
+					<input type="number" id="Damage_Result_B_min" disabled="disabled" />
+				</label>
+				<label>必杀技能平均伤害：
+					<input type="number" id="Damage_Result_B_mid" disabled="disabled" />
+				</label>
+				<label>必杀技能最高伤害：
+					<input type="number" id="Damage_Result_B_max" disabled="disabled" />
+				</label>
 			</div>
 		</div>
 		<script>
@@ -119,6 +191,7 @@
 
 				// 获取角色攻击力
 				Character.attack = document.getElementById("Data_input_Att").value;
+				Character.da = document.getElementById("Data_input_DA").value;
 
 				// 获取连击率以及连击伤害
 				const ext_info = document.querySelectorAll('input[id ^= "Data_input_Ext"]');
@@ -130,20 +203,33 @@
 				Character.crt = crt_info[0].value;
 				Character.crtadd = crt_info[1].value;
 
+				// 获取连携数值
+				Character.teamwork = document.getElementById("Data_input_TeamWork").value;
+
 				// 获取辅助角色信息
 				const assist_info = document.querySelectorAll('input[id ^= "Data_Assist"]');
 				Character.assist = new Array()
 				for (i = 0; i < assist_info.length; i++) { Character.assist[i] = assist_info[i].checked; }
 
 				// 获取技能等级
-				const skill_info = document.querySelectorAll('input[id ^= "Skill_level"]');
+				const skill_info = document.querySelectorAll('input[id ^= "Skill_level_"]');
 				Character.skilllevel = new Array()
 				for (i = 0; i < skill_info.length; i++) { Character.skilllevel[i] = skill_info[i].value; }
+
+				// 获取技能增益
+				const skillup_info = document.querySelectorAll('input[id ^= "Skill_levelup"]');
+				Character.skilllevelup = new Array()
+				for (i = 0; i < skillup_info.length; i++) { Character.skilllevelup[i] = skillup_info[i].value; }
 
 				// 获取敌人信息
 				const monster_info = document.querySelectorAll('input[id ^= "Monster_x"]');
 				Character.monsterinfo = new Array()
 				for (i = 0; i < monster_info.length; i++) { Character.monsterinfo[i] = monster_info[i].checked; }
+
+				// 获取敌人防御
+				const monsterdef_info = document.querySelectorAll('input[id ^= "Monster_def"]');
+				Character.monsterdefinfo = new Array()
+				for (i = 0; i < monsterdef_info.length; i++) { Character.monsterdefinfo[i] = monsterdef_info[i].value; }
 				return Character;
 			}
 
@@ -168,6 +254,26 @@
 				var selectElementText = selectElementOption[selectElementIndex].text;
 				var selectElementValue = selectElementOption[selectElementIndex].value;
 				console.log("当前选择第" + (selectElementIndex + 1) + "项，人物：" + selectElementText + "[" + selectElementValue + "]。")
+
+				var Character = new Object();
+				Character.name = selectElementValue;
+				$.ajax({
+					url: "http://127.0.0.1:5000/RE0Skill",
+					type: "POST",
+					contentType: "application/json;charset=utf-8",
+					data: JSON.stringify(Character),
+					dataType: "text",
+					success: function(result) {
+						SkillInfo = eval(result);
+						for (i = 0; i < SkillInfo.length; i++) {
+							document.getElementById("Skill_label_" + SkillInfo[i][0].toLowerCase() + "_name").innerText = SkillInfo[i][1];
+						}
+						console.log("Success: " + result);
+					},
+					error: function(msg) {
+						console.log("Error: " + JSON.stringify(msg));
+					}
+				})
 			});
 			const loadElement = document.querySelector('#load');
 			loadElement.addEventListener('click', (event) => {
@@ -184,6 +290,7 @@
 
 					// 设置角色攻击力
 					document.getElementById("Data_input_Att").value = Character.attack;
+					document.getElementById("Data_input_DA").value = Character.da;
 
 					// 设置连击率以及连击伤害
 					const ext_info = document.querySelectorAll('input[id ^= "Data_input_Ext"]');
@@ -195,17 +302,28 @@
 					crt_info[0].value = Character.crt;
 					crt_info[1].value = Character.crtadd;
 
+					// 设置连携数值
+					document.getElementById("Data_input_TeamWork").value = Character.teamwork;
+
 					// 设置辅助角色信息
 					const assist_info = document.querySelectorAll('input[id ^= "Data_Assist"]');
 					for (i = 0; i < assist_info.length; i++) { assist_info[i].checked = Character.assist[i]; }
 
 					// 设置技能等级
-					const skill_info = document.querySelectorAll('input[id ^= "Skill_level"]');
+					const skill_info = document.querySelectorAll('input[id ^= "Skill_level_"]');
 					for (i = 0; i < skill_info.length; i++) { skill_info[i].value = Character.skilllevel[i]; }
+
+					// 设置技能等级
+					const skillup_info = document.querySelectorAll('input[id ^= "Skill_levelup"]');
+					for (i = 0; i < skillup_info.length; i++) { skillup_info[i].value = Character.skilllevelup[i]; }
 
 					// 设置敌人信息
 					const monster_info = document.querySelectorAll('input[id ^= "Monster_x"]');
 					for (i = 0; i < monster_info.length; i++) { monster_info[i].checked = Character.monsterinfo[i]; }
+
+					// 设置敌人防御
+					const monsterdef_info = document.querySelectorAll('input[id ^= "Monster_def"]');
+					for (i = 0; i < monsterdef_info.length; i++) { monsterdef_info[i].value = Character.monsterdefinfo[i]; }
 					console.log("已载入数据")
 				} else {
 					console.log("数据不存在")
@@ -226,7 +344,29 @@
 			const calcElement = document.querySelector('#calc');
 			calcElement.addEventListener('click', (event) => {
 				Character = MakeCharacter();
-				console.log(Character)
+				$.ajax({
+					url: "http://127.0.0.1:5000/RE0",
+					type: "POST",
+					contentType: "application/json;charset=utf-8",
+					data: JSON.stringify(Character),
+					dataType: "text",
+					success: function(result) {
+						result = result.replace(/\s+/g,"").split(',')
+						if (result.length == 3 * 4) {
+							Array("A_", "AP_", "SP_", "B_").forEach((itemType, indexType, arrayType) => {
+								Array("min", "mid", "max").forEach((item, index, array) => {
+									document.getElementById("Damage_Result_" + itemType + item).value = result[indexType * 3 + (index + 1) - 1];
+								})
+							})
+						}
+						console.log("Success: " + result);
+					},
+					error: function(msg) {
+						console.log("Error: " + JSON.stringify(msg));
+					}
+				})
+				return false;
+				// console.log(Character)
 			});
 		</script>
 	</body>
