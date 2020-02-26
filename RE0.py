@@ -50,6 +50,11 @@ class Character:
         self.AttackValue[1] = self.AttackValue[1] + attmidV
         self.AttackValue[2] = self.AttackValue[2] + attmaxV
 
+    def AttackValuesClean(self):
+        self.AttackValue[0] = 0
+        self.AttackValue[1] = 0
+        self.AttackValue[2] = 0
+
 class Emilia(Character):
     CharName = "爱蜜莉雅·朦胧的睡意"
     Skill = {
@@ -157,11 +162,11 @@ class Crusch(Character):
         "A": {
             "TYPE": 0,
             "NAME": "剑之絁",
-            "LV1": [(4, 0, 100, 20)],
-            "LV2": [(4, 0, 105, 22)],
-            "LV3": [(4, 0, 110, 24)],
-            "LV4": [(4, 0, 115, 26)],
-            "LV5": [(4, 0, 125, 30)]
+            "LV1": [(1, 0, 100, 0), (4, 0, 100, 20)],
+            "LV2": [(1, 0, 100, 0), (4, 0, 105, 22)],
+            "LV3": [(1, 0, 100, 0), (4, 0, 110, 24)],
+            "LV4": [(1, 0, 100, 0), (4, 0, 115, 26)],
+            "LV5": [(1, 0, 100, 0), (4, 0, 125, 30)]
         },
         # 用7段具有自身50%攻击力的剑气攻击敌方
         "AP": {
@@ -373,7 +378,7 @@ def Analyse(List):
     Deviation - 范围偏差（0.2大范围至0.8普遍）
     # CalcMode - 连击(0)或暴击(1)计算
 ''' 
-def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] * 3, Deviation = 0.2):
+def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [Monster(375)] * 3, Deviation = 0.2):
     Skill = []
     CurrentCombo = 0
     DefDePercent = 0
@@ -390,7 +395,6 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
     # 拆分伤害概率
     Probability_EXT = Probability[0]
     Probability_CRT = Probability[1]
-    CalcMode = Probability[1] > Probability[0]
     # 拆分伤害辅正
     Auxiliary_EXT = Auxiliary[0]
     Auxiliary_CRT = Auxiliary[1]
@@ -398,8 +402,11 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
     # Probability = 1 if Probability > 1 else Probability
     Probability_EXT = (Probability_EXT > 100 and 100 or Probability_EXT)
     Probability_CRT = (Probability_CRT > 100 and 100 or Probability_CRT)
+    CalcMode = Probability_EXT > Probability_CRT
     HeppenProbabilityThreshold_EXT = []
     HeppenProbabilityThreshold_CRT = []
+    HeppenProbabilityThresholdList_EXT = []
+    HeppenProbabilityThresholdList_CRT = []
 
     for AttackInfo in AttackList:
         LList = []
@@ -439,9 +446,11 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
             L["暴击概率"] = HeppenProbability_CRT
             LList.append(L)
         Skill.append(LList)
+        #print(Skill)
         # 输出最大概率次数，过滤低于阈值事件
         HeppenProbabilityList_EXT.sort()
         HeppenProbabilityList_CRT.sort()
+        #print(HeppenProbabilityList_EXT)
         HeppenProbabilityThreshold_EXT_TMP = round_up(max(HeppenProbabilityList_EXT) * Deviation)
         HeppenProbabilityThreshold_CRT_TMP = round_up(max(HeppenProbabilityList_CRT) * Deviation)
         n = 3 if 3 < len(HeppenProbabilityList_EXT) - 1 else len(HeppenProbabilityList_EXT) - 1
@@ -454,6 +463,8 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
             x = n + 1 - i
             if ((HeppenProbabilityThreshold_CRT_TMP < HeppenProbabilityList_CRT[-x]) and HeppenProbabilityList_CRT[-x] > 5):
                 HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-x])
+        HeppenProbabilityThresholdList_EXT.append(HeppenProbabilityThreshold_EXT)
+        HeppenProbabilityThresholdList_CRT.append(HeppenProbabilityThreshold_CRT)
     CountTimes = 0
     AttackValue = 0
     CharCard.AttackValue = [0, 0, 0]
@@ -465,11 +476,14 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
             HeppenProbability_CRT = SingleSkill["暴击概率"]
             CountTimes_EXT = len(HeppenProbabilityThreshold_EXT) - 1 if len(HeppenProbabilityThreshold_EXT) - 1 < CountTimes else CountTimes
             if (HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes_EXT] and not CalcMode):
+                CountTimes = CountTimes + 1
                 continue
             CountTimes_CRT = len(HeppenProbabilityThreshold_CRT) - 1 if len(HeppenProbabilityThreshold_CRT) - 1 < CountTimes else CountTimes
             if (HeppenProbability_CRT < HeppenProbabilityThreshold_CRT[CountTimes_CRT] and CalcMode):
+                CountTimes = CountTimes + 1
                 continue
             elif (abs(HeppenProbability_EXT - HeppenProbability_CRT) == 100 and SingleSkill["发生次数"] == 0):
+                CountTimes = CountTimes + 1
                 continue
             else:
                 HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes_EXT] else HeppenProbability_EXT
@@ -483,7 +497,7 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
             # 攻击段数 * 技能每段伤害 * 面板攻击力 * 伤害加成 * 默认连携 100% * 敌人伤减 50%
             Attack_P = 0
             TeamWork = 0 if SingleSkill["技能段数"] == 1 else SingleSkill["连携加成"] / 2
-            Attack_P = SingleSkill["技能段数"] * SingleSkill["单段倍率"] * (AttackPower / 100)  * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent
+            Attack_P = SingleSkill["技能段数"] * SingleSkill["单段倍率"] * (AttackPower / 100)  * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent * ((100 + SkillUp) / 100)
             # print("常规攻击", int(Attack_P), "点伤害。")
 
             AttackProbList = []
@@ -493,7 +507,7 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
                 # 连击段数 * 面板攻击力 *（15% + 辅正）* 伤害加成 * 默认连携 100%
                 Attack_EXT = 0
                 if (HeppenProbability_EXT > 0):
-                    Attack_EXT = SingleSkill["发生次数"] * (AttackPower / 100) * Auxiliary_EXT * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100)
+                    Attack_EXT = SingleSkill["发生次数"] * (AttackPower / 100) * Auxiliary_EXT * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * ((100 + SkillUp) / 100)
                 # print("连击附加", int(Attack_EXT), "点伤害。")
                 # 连击次数 SingleSkill["发生次数"]
                 # 阈值 HeppenProbabilityThreshold_EXT * 3
@@ -504,7 +518,7 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
                     # 计算概率前三的暴击伤害
                     Attack_CRT = 0
                     if (Count[1] > 0):
-                        Attack_CRT = Count[0] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent
+                        Attack_CRT = Count[0] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent * ((100 + SkillUp) / 100)
                     else:
                         Attack_CRT = 0
                     AttackProbList.append([Attack_CRT + Attack_EXT + Attack_P, Count[1], AttackProbListPercent])
@@ -514,7 +528,7 @@ def SkillDamage(AttackList, CharCard, Combo = 100, MonsterList = [Monster(375)] 
                 # 暴击段数 * 技能每段伤害 * 面板攻击力 *（50% + 辅正）* 伤害加成 * 默认连携 100% * 敌人伤减 50%
                 Attack_CRT = 0
                 if (HeppenProbability_CRT > 0):
-                    Attack_CRT = SingleSkill["发生次数"] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent
+                    Attack_CRT = SingleSkill["发生次数"] * SingleSkill["单段倍率"] * (AttackPower / 100)  * (Auxiliary_CRT / 100) * ((AmplifyDamage + 100) / 100) * ((Combo + TeamWork) / 100) * DefDePercent * ((100 + SkillUp) / 100)
                 # print("暴击附加", int(Attack_CRT), "点伤害。")
                 # 概率表取前三计算范围
                 EXTMaxCount = MaxCount(AttackInfo, not CalcMode)
@@ -542,15 +556,14 @@ if __name__ == '__main__':
     Team = [
         # Emilia(3000, 12, [90, 30], [15.0, 200]),
         # Felt(3000, 12, [90, 30], [15.0, 200]),
-        Ram(3000, 0, [100, 0], [15.0, 150])
+        # Crusch(3000, 13, [26.5, 75+15], [15.0, 186])
+        Ram(3000, 13, [80, 10], [15.0, 210])
         # 角色(基础攻击, 伤害加成, [连击率, 暴击率], [连击伤害, 暴击伤害]),
         # Felt / Crusch / Emilia(2097, 6, [50, 100], [17.5, 150])
     ]
 
     MonsterList =[
         Monster(375, 1),
-        Monster(375, 1),
-        Monster(375, 1)
         # Monster(初始防御率, 增防减伤 Buff)
     ]
 
@@ -559,7 +572,6 @@ if __name__ == '__main__':
     for Member in Team:
         index = index + 1
         print("当前出手：", Member.CharName, "【连携加成：", Combo, "%】")
-        Combo = Combo + SkillDamage(Member.Skill["AP"]["LV5"], Member, Combo, MonsterList)
+        Combo = Combo + SkillDamage(Member.Skill["AP"]["LV5"], Member, 0, Combo, MonsterList)
         print("结束技能：", Member.AttackValue)
         if index > 3: Combo = 100
-    
