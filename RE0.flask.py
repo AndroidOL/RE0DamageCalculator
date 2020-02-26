@@ -50,6 +50,11 @@ class Character:
         self.AttackValue[1] = self.AttackValue[1] + attmidV
         self.AttackValue[2] = self.AttackValue[2] + attmaxV
 
+    def AttackValuesClean(self):
+        self.AttackValue[0] = 0
+        self.AttackValue[1] = 0
+        self.AttackValue[2] = 0
+
 class Emilia(Character):
     CharName = "爱蜜莉雅·朦胧的睡意"
     Skill = {
@@ -400,6 +405,8 @@ def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [M
     CalcMode = Probability_EXT > Probability_CRT
     HeppenProbabilityThreshold_EXT = []
     HeppenProbabilityThreshold_CRT = []
+    HeppenProbabilityThresholdList_EXT = []
+    HeppenProbabilityThresholdList_CRT = []
 
     for AttackInfo in AttackList:
         LList = []
@@ -439,9 +446,11 @@ def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [M
             L["暴击概率"] = HeppenProbability_CRT
             LList.append(L)
         Skill.append(LList)
+        #print(Skill)
         # 输出最大概率次数，过滤低于阈值事件
         HeppenProbabilityList_EXT.sort()
         HeppenProbabilityList_CRT.sort()
+        #print(HeppenProbabilityList_EXT)
         HeppenProbabilityThreshold_EXT_TMP = round_up(max(HeppenProbabilityList_EXT) * Deviation)
         HeppenProbabilityThreshold_CRT_TMP = round_up(max(HeppenProbabilityList_CRT) * Deviation)
         n = 3 if 3 < len(HeppenProbabilityList_EXT) - 1 else len(HeppenProbabilityList_EXT) - 1
@@ -454,6 +463,8 @@ def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [M
             x = n + 1 - i
             if ((HeppenProbabilityThreshold_CRT_TMP < HeppenProbabilityList_CRT[-x]) and HeppenProbabilityList_CRT[-x] > 5):
                 HeppenProbabilityThreshold_CRT.append(HeppenProbabilityList_CRT[-x])
+        HeppenProbabilityThresholdList_EXT.append(HeppenProbabilityThreshold_EXT)
+        HeppenProbabilityThresholdList_CRT.append(HeppenProbabilityThreshold_CRT)
     CountTimes = 0
     AttackValue = 0
     CharCard.AttackValue = [0, 0, 0]
@@ -465,11 +476,14 @@ def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [M
             HeppenProbability_CRT = SingleSkill["暴击概率"]
             CountTimes_EXT = len(HeppenProbabilityThreshold_EXT) - 1 if len(HeppenProbabilityThreshold_EXT) - 1 < CountTimes else CountTimes
             if (HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes_EXT] and not CalcMode):
+                CountTimes = CountTimes + 1
                 continue
             CountTimes_CRT = len(HeppenProbabilityThreshold_CRT) - 1 if len(HeppenProbabilityThreshold_CRT) - 1 < CountTimes else CountTimes
             if (HeppenProbability_CRT < HeppenProbabilityThreshold_CRT[CountTimes_CRT] and CalcMode):
+                CountTimes = CountTimes + 1
                 continue
             elif (abs(HeppenProbability_EXT - HeppenProbability_CRT) == 100 and SingleSkill["发生次数"] == 0):
+                CountTimes = CountTimes + 1
                 continue
             else:
                 HeppenProbability_EXT = 0 if HeppenProbability_EXT < HeppenProbabilityThreshold_EXT[CountTimes_EXT] else HeppenProbability_EXT
@@ -539,19 +553,20 @@ def SkillDamage(AttackList, CharCard, SkillUp = 0, Combo = 100, MonsterList = [M
     return CurrentCombo
 
 
+
 '''
 if __name__ == '__main__':
     Team = [
         # Emilia(3000, 12, [90, 30], [15.0, 200]),
         # Felt(3000, 12, [90, 30], [15.0, 200]),
         # Crusch(3000, 13, [26.5, 75+15], [15.0, 186])
-        Crusch(3000, 13, [26.5, 65+150], [15.0, 210])
+        Ram(3000, 13, [80, 10], [15.0, 210])
         # 角色(基础攻击, 伤害加成, [连击率, 暴击率], [连击伤害, 暴击伤害]),
         # Felt / Crusch / Emilia(2097, 6, [50, 100], [17.5, 150])
     ]
 
     MonsterList =[
-        Monster(375, 1)
+        Monster(375, 1),
         # Monster(初始防御率, 增防减伤 Buff)
     ]
 
@@ -571,7 +586,7 @@ from flask import request
 from flask_cors import CORS
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/.*": {"origins": "http://127.0.0.1"}})
+cors = CORS(app, resources={r"/.*": {"origins": ["http://106.13.206.213", "http://106.13.206.213:5001", "http://127.0.0.1"]}})
 
 @app.route('/')
 def hello_world():
@@ -600,7 +615,9 @@ def RE0():
 
     MLCount = len(MonsterList)
     for ML in CharInfo['monsterinfo']:
+        print(ML)
         if (ML):
+            print(ML)
             MonsterList.append(Monster(int(CharInfo['monsterdefinfo'][MLCount]), 1))
         MLCount = MLCount + 1
     print(json.dumps(Char.__dict__, ensure_ascii=True))
@@ -612,9 +629,9 @@ def RE0():
         SkillDamage(Char.Skill[SkillType]["LV" + str(int(CharInfo['skilllevel'][SLCount])) if int(CharInfo['skilllevel'][SLCount]) in (1, 2, 3, 4, 5) else "1" ], Char,
                     float(CharInfo['skilllevelup'][SLCount]), Combo, MonsterList)
         ret.append(', '.join([str(x) for x in Char.AttackValue]))
+        Char.AttackValuesClean()
         SLCount = SLCount + 1
     return ', '.join(ret)
 
 if __name__ == '__main__':
     app.run()
-
