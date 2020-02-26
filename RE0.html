@@ -16,6 +16,14 @@
 					<option value="Crusch">库珥修·晚宴的女主人</option>
 					<option value="Ram">幼年拉姆·纸风车的约定</option>
 					<option value="Emilia">爱蜜莉雅·朦胧的睡意</option>
+					<option value="Felt">菲鲁特·偷窃徽章</option>
+					<option value="Rem">雷姆·失控的鬼</option>
+					<option value="Julius">由里乌斯·王国之剑</option>
+					<option value="Elsa">艾尔莎·诱惑的回眸</option>
+					<option value="Betelgeuse">怠惰·疯狂的信仰</option>
+					<option value="Rozuwaru">罗兹瓦尔·夜阑已至</option>
+					<option value="Reinhard">莱因哈鲁特·工作闲暇</option>
+					<option value="Wilhelm">青年威尔海姆·挥剑练习</option>
 					<option value="blank" selected="selected">空白</option>
 				</select>
 			</div>
@@ -111,16 +119,22 @@
 			<div id="Monster">
 				<label>选择敌人：</label>
 				<br />
-				<input type="checkbox" id="Monster_bc" value="majokyou_taizaishikyou" checked="checked" disabled="disabled" />
-				<label for="Monster_c">魔女教大罪司教「怠惰」担当</label>
+				<label>
+					<input type="checkbox" id="Monster_bc" value="majokyou_taizaishikyou" checked="checked" disabled="disabled" />
+					魔女教大罪司教「怠惰」担当
+				</label>
 				<input type="number" id="Monster_def_bc" value="375" min="0" max="9999" step="1" />
 				<br />
-				<input type="checkbox" id="Monster_xl" value="majokyou" />
-				<label for="Monster_l">魔女教徒</label>
+				<label>
+					<input type="checkbox" id="Monster_xl" value="majokyou" />
+					魔女教徒
+				</label>
 				<input type="number" id="Monster_def_xl" value="375" min="0" max="9999" step="1" />
 				<br />
-				<input type="checkbox" id="Monster_xr" value="majokyou" />
-				<label for="Monster_r">魔女教徒</label>
+				<label>
+					<input type="checkbox" id="Monster_xr" value="majokyou" />
+					魔女教徒
+				</label>
 				<input type="number" id="Monster_def_xr" value="375" min="0" max="9999" step="1" />
 				<br />
 			</div>
@@ -254,6 +268,25 @@
 				var selectElementText = selectElementOption[selectElementIndex].text;
 				var selectElementValue = selectElementOption[selectElementIndex].value;
 				console.log("当前选择第" + (selectElementIndex + 1) + "项，人物：" + selectElementText + "[" + selectElementValue + "]。")
+				switch (selectElementValue) {
+					case "Reinhard":
+						document.getElementById("Data_input_Ext").value = 0;
+						document.getElementById("Data_input_ExtAdd").value = 0;
+						document.getElementById("Data_input_Ext").disabled = true;
+						document.getElementById("Data_input_ExtAdd").disabled = true;
+						document.getElementById("Data_Assist_Rozuwaru").checked = false;
+						break;
+					case "Rozuwaru":
+						document.getElementById("Data_input_Ext").disabled = false;
+						document.getElementById("Data_input_ExtAdd").disabled = false;
+						document.getElementById("Data_Assist_Rozuwaru").checked = true;
+						break;
+					default:
+						document.getElementById("Data_input_Ext").disabled = false;
+						document.getElementById("Data_input_ExtAdd").disabled = false;
+						document.getElementById("Data_Assist_Rozuwaru").checked = false;
+						break;
+				}
 
 				var Character = new Object();
 				Character.name = selectElementValue;
